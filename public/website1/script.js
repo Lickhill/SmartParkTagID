@@ -9,7 +9,7 @@ function generateQR() {
 	document.getElementById("qrcode").innerHTML = "";
 
 	// Create URL for website2
-	const url = `http://localhost:3000/display?phone=${encodeURIComponent(
+	const url = `https://smart-park-tag-id.vercel.app/display?phone=${encodeURIComponent(
 		phoneNumber
 	)}`;
 
