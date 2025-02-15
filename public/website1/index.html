@@ -4,6 +4,69 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>QR Code Generator</title>
+		<style>
+			.grid-container {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				margin: 20px;
+			}
+
+			.grid {
+				display: grid;
+				grid-template-columns: repeat(10, 30px);
+				gap: 1px;
+				background-color: #333;
+				padding: 10px;
+				border-radius: 5px;
+			}
+
+			.cell {
+				width: 30px;
+				height: 30px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-weight: bold;
+				color: white;
+				transition: background-color 0.3s;
+			}
+
+			.pathway {
+				background-color: #040000;
+			}
+
+			.parking {
+				background-color: #4caf50;
+			}
+
+			.selected {
+				background-color: #ff0000 !important;
+				transform: scale(1.1);
+			}
+
+			.input-section {
+				margin: 20px;
+			}
+
+			input {
+				padding: 5px;
+				margin: 5px;
+			}
+
+			button {
+				padding: 8px 15px;
+				background-color: #4caf50;
+				color: white;
+				border: none;
+				border-radius: 4px;
+				cursor: pointer;
+			}
+
+			button:hover {
+				background-color: #45a049;
+			}
+		</style>
 		<link rel="stylesheet" href="/website1/style.css" />
 		<script src="/website1/qrcode.min.js"></script>
 	</head>
@@ -19,7 +82,84 @@
 				<button onclick="generateQR()">Generate QR Code</button>
 			</div>
 			<div id="qrcode"></div>
+			<div class="grid-container">
+				<h2>Parking Grid</h2>
+				<div class="grid" id="parkingGrid"></div>
+				<div class="input-section">
+					<input
+						type="number"
+						id="row"
+						placeholder="Row (0-9)"
+						min="0"
+						max="9"
+					/>
+					<input
+						type="number"
+						id="col"
+						placeholder="Column (0-9)"
+						min="0"
+						max="9"
+					/>
+					<button onclick="highlightCell()">Highlight Cell</button>
+				</div>
 		</div>
 		<script src="/website1/script.js"></script>
+		<script>
+			const parkingMatrix = [
+    [0, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+    [1, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+    [1, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+    [1, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 1, 0, 1, 0, 1, 0],
+    [1, 0, 0, 0, 1, 0, 1, 0, 1, 0],
+    [1, 0, 0, 0, 1, 0, 1, 0, 1, 0],
+    [1, 0, 0, 0, 1, 0, 1, 0, 1, 0],
+    [0, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+];
+
+function createGrid() {
+    const grid = document.getElementById("parkingGrid");
+
+    for (let i = 0; i < parkingMatrix.length; i++) {
+        for (let j = 0; j < parkingMatrix[i].length; j++) {
+            const cell = document.createElement("div");
+            cell.className = `cell ${
+                parkingMatrix[i][j] === 1 ? "pathway" : "parking"
+            }`;
+            cell.id = `cell-${i}-${j}`;
+            cell.textContent = parkingMatrix[i][j];
+            grid.appendChild(cell);
+        }
+    }
+}
+
+function highlightCell() {
+    const rowInput = document.getElementById("row");
+    const colInput = document.getElementById("col");
+    const row = parseInt(rowInput.value);
+    const col = parseInt(colInput.value);
+
+    if (row >= 0 && row < 10 && col >= 0 && col < 10) {
+        // Check if the selected coordinate is a road (1)
+        if (parkingMatrix[row][col] === 1) {
+            alert("Cannot select road coordinates!");
+        } else {
+            const cell = document.getElementById(`cell-${row}-${col}`);
+            cell.style.backgroundColor = "red";
+        }
+    } else {
+        alert("Please enter valid coordinates (0-9)");
+    }
+
+    // Clear input fields
+    rowInput.value = "";
+    colInput.value = "";
+}
+
+// Create the grid when the page loads
+createGrid();
+
+		</script>
 	</body>
 </html>
